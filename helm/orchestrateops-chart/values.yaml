@@ -1,0 +1,30 @@
+replicaCount: 1
+
+image:
+  repository: felipesantosmachado/orchestrateops
+  tag: "latest"
+  pullPolicy: Always
+
+# Configuração para o serviço ClusterIP
+service:
+  type: ClusterIP
+  port: 80
+
+# Configuração para o serviço NodePort
+nodeportService:
+  type: NodePort
+  port: 80
+  nodePort: ""  # Deixe vazio para alocação automática, ou defina uma porta específica, como 30080
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 1Gi

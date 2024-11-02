@@ -1,0 +1,10 @@
+services:
+  orchestrateops:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/app
+      - ./app/data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///app/data/orchestrateops.db
