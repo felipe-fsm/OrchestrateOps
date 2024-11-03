@@ -25,4 +25,4 @@ spec:
       volumes:
         - name: sqlite-storage
           persistentVolumeClaim:
-            claimName: sqlite-pvc  # PVC para persistência do SQLite
+            claimName: {{ .Release.Name }}-sqlite-pvc  # Nome do PVC com o prefixo da release

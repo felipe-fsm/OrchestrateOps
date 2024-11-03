@@ -1,4 +1,4 @@
-
+Aqui está o `README.md` atualizado, agora incluindo as **Operações Básicas do GitHub** na seção de operações.
 
 ---
 
@@ -8,9 +8,11 @@
 - [Configuração do Ambiente](#configuração-do-ambiente)
 - [Iniciando a Aplicação](#iniciando-a-aplicação)
 - [Testando a Aplicação](#testando-a-aplicação)
-- [Possíveis Problemas e Soluções](#possíveis-problemas-e-soluções)
 - [Operações Básicas](#operações-básicas)
-- [Limpeza Completa](#limpeza-completa)
+  - [Docker](#docker)
+  - [Kubernetes](#kubernetes)
+  - [Helm](#helm)
+  - [GitHub](#github)
 
 ---
 
@@ -82,7 +84,7 @@ curl --version           # Curl
 ### 1. Testes CRUD
 
 - **Criação de uma Solicitação (POST)**:
-   - Crie novas solicitações com os seguintes comandos para diferentes setores e solicitantes:
+  Use o comando abaixo para criar solicitações com setores e solicitantes variados:
 
    ```bash
    curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
@@ -90,78 +92,6 @@ curl --version           # Curl
      "solicitante": "Maria Silva",
      "produto": "Notebook",
      "quantidade": 1,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Compras",
-     "solicitante": "João Souza",
-     "produto": "Impressora",
-     "quantidade": 2,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "TI",
-     "solicitante": "Ana Costa",
-     "produto": "Cabo HDMI",
-     "quantidade": 5,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Marketing",
-     "solicitante": "Pedro Lima",
-     "produto": "Projetor",
-     "quantidade": 1,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Vendas",
-     "solicitante": "Carla Fernandes",
-     "produto": "Tablet",
-     "quantidade": 3,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Financeiro",
-     "solicitante": "Luiz Alves",
-     "produto": "Calculadora",
-     "quantidade": 10,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "RH",
-     "solicitante": "Juliana Ribeiro",
-     "produto": "Cadeira Ergonômica",
-     "quantidade": 4,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Logística",
-     "solicitante": "Ricardo Martins",
-     "produto": "Estante de Arquivo",
-     "quantidade": 2,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "TI",
-     "solicitante": "Fernanda Dias",
-     "produto": "Roteador",
-     "quantidade": 1,
-     "status": "pendente"
-   }'
-   
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Compras",
-     "solicitante": "Marcelo Vieira",
-     "produto": "Cartucho de Tinta",
-     "quantidade": 8,
      "status": "pendente"
    }'
    ```
@@ -200,25 +130,11 @@ curl --version           # Curl
    curl -X GET "http://localhost:8080/solicitacoes/"
    ```
 
-## Possíveis Problemas e Soluções
-
-- **Erro: `Cannot connect to the Docker daemon`**  
-  **Solução**: Verifique se o Docker está em execução com `sudo systemctl status docker`. Se necessário, inicie-o com `sudo systemctl start docker`.
-
-- **Erro: `Connection refused` ao acessar a aplicação**  
-  **Solução**: Verifique os pods em execução (`kubectl get pods`). Certifique-se de que o port forwarding está configurado.
-
-- **Erro: `ImagePullBackOff` ou `ErrImagePull` no Kubernetes**  
-  **Solução**: Execute `eval $(minikube docker-env)` antes de construir a imagem. Reinstale o chart Helm se necessário.
-
-- **Banco de dados não persiste após reiniciar o Pod**  
-  **Solução**: Verifique o volume em `app/data` e o mapeamento de volumes no Docker e Kubernetes. Certifique-se de que o `DATABASE_URL` aponta para um caminho persistente.
-
----
-
 ## Operações Básicas
 
 ### Docker
+
+#### Comandos Básicos
 
 - **Listar Containers**:
   ```bash
@@ -228,11 +144,6 @@ curl --version           # Curl
 - **Iniciar Docker**:
   ```bash
   sudo systemctl start docker
-  ```
-
-- **Iniciar Containers com `docker-compose`**:
-  ```bash
-  docker-compose up --build -d
   ```
 
 - **Parar Todos os Containers**:
@@ -245,19 +156,31 @@ curl --version           # Curl
   docker rm -vf $(docker ps -aq)
   ```
 
-- **Limpeza Completa do Docker**:
+#### Limpeza
+
+- **Limpeza Completa do Docker** (remove todos os containers, imagens e volumes não utilizados):
   ```bash
   docker system prune -a --volumes -f
   ```
 
+#### Solução de Problemas
+
+- **Erro: `Cannot connect to the Docker daemon`**  
+  **Solução**: Verifique se o Docker está em execução com `sudo systemctl status docker`. Se necessário, inicie-o com `sudo systemctl start docker`.
+
+- **Imagem não encontrada (`ImagePullBackOff` ou `ErrImagePull` no Kubernetes)**  
+  **Solução**: Certifique-se de ter executado `eval $(minikube docker-env)` antes de construir a imagem para que ela esteja disponível no ambiente do Minikube.
+
 ### Kubernetes
+
+#### Comandos Básicos
 
 - **Iniciar o Minikube**:
   ```bash
   minikube start
   ```
 
-- **Listar Pods no Namespace Atual**:
+- **Listar Todos os Pods no Namespace Atual**:
   ```bash
   kubectl get pods
   ```
@@ -267,113 +190,141 @@ curl --version           # Curl
   kubectl delete pod <nome-do-pod>
   ```
 
-- **Descrever um Pod**:
+- **Descrever um Pod (detalhes do status)**:
   ```bash
   kubectl describe pod <nome-do-pod>
   ```
 
+#### Limpeza
+
+- **Remover Todos os Recursos no Kubernetes**:
+  ```bash
+  kubectl delete all --all --all-namespaces
+  ```
+
+- **Remover Namespaces Adicionais**:
+  ```bash
+  kubectl get namespaces
+  kubectl delete namespace <nome-do-namespace>
+  ```
+
+#### Solução de Problemas
+
+- **Erro: `Connection refused` ao tentar acessar a aplicação**  
+  **Solução**: Verifique se o pod está em execução (`kubectl get pods`). Se o pod não estiver ativo, verifique os detalhes com `kubectl describe pod <nome-do-pod>`, e reconfigure o port forwarding.
+
+- **Banco de dados não persiste após reiniciar o Pod**  
+  **Solução**: Verifique o volume em `/app/data` e o mapeamento de volumes no Docker e Kubernetes. Certifique-se de que o `DATABASE_URL` está configurado para um caminho persistente.
+
 ### Helm
 
-- **Instalar um Chart**:
+#### Comandos Básicos
+
+- **Instalar uma Release**:
   ```bash
   helm install <nome-da-release> <caminho-do-chart>
   ```
 
-- **Atualizar uma Release**:
+- **Atualizar uma Release Existente**:
   ```bash
   helm upgrade <nome-da-release> <caminho-do-chart>
   ```
 
-- **Limpar Configurações Locais do Helm**:
+- **Listar Todas as Releases**:
   ```bash
-  helm repo remove <nome-do-repo>
+  helm list --all-namespaces
+  ```
+
+- **Listar Releases em um Namespace Específico**:
+  ```bash
+  helm list --namespace <nome-do-namespace>
+  ```
+
+#### Limpeza
+
+- **Desinstalar uma Release**:
+  ```bash
+  helm uninstall <nome-da-release>
+  ```
+
+- **Remover Todas as Releases e Repositórios do Helm**:
+  ```bash
+  helm ls --all --short | xargs -n 1 helm delete
+  helm repo list --short | xargs -n 1 helm repo remove
   rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
+  ```
+
+#### Solução de Problemas
+
+- **Release não foi desinstalada completamente (PVC não removido)**  
+  **Solução**: Verifique se o PVC possui a anotação `"helm.sh/resource-policy": keep`, o que instrui o Helm a manter o PVC após a desinstalação. Para removê-lo manualmente, use `kubectl delete pvc <nome-do-pvc>`.
+
+- **Erro: `Helm not found` ou falha ao instalar o chart**  
+  **Solução**: Verifique se o Helm está instalado (`helm version`). Se não estiver, instale-o conforme a documentação oficial.
+
+### GitHub
+
+#### Comandos Básicos
+
+- **Verificar o Status do Repositório**:
+  ```bash
+  git status
+  ```
+
+- **Adicionar Arquivos ao Staging**:
+  - Para adicionar um arquivo específico:
+    ```bash
+    git add <nome-do-arquivo>
+    ```
+  - Para adicionar todas as alterações:
+    ```bash
+    git add .
+    ```
+
+- **Fazer um Commit das Alterações**:
+  ```bash
+  git commit -m "Descrição das alterações realizadas"
+  ```
+
+- **Enviar as Alterações para o Repositório Remoto**:
+  ```bash
+  git push origin <nome-da-branch>
+  ```
+
+#### Limpeza
+
+
+
+- **Desfazer um Commit Localmente** (reverte o último commit mas mantém as alterações no staging):
+  ```bash
+  git reset --soft HEAD~1
+  ```
+
+- **Desfazer Alterações no Staging**:
+  ```bash
+  git reset
+  ```
+
+- **Remover Arquivos Localmente** (mas não no repositório remoto):
+  ```bash
+  git rm --cached <nome-do-arquivo>
+  ```
+
+#### Solução de Problemas
+
+- **Erro: `detached HEAD`**  
+  **Solução**: Verifique a branch em que está e retorne à branch principal com:
+  ```bash
+  git checkout main
+  ```
+
+- **Conflito de Merge**  
+  **Solução**: Edite manualmente os arquivos para resolver os conflitos, então adicione as alterações e faça o commit.
+  ```bash
+  git add <arquivos-resolvidos>
+  git commit -m "Resolvendo conflitos"
   ```
 
 ---
 
-## Limpeza Completa
-
-### Docker
-
-Para remover containers, imagens, volumes e redes:
-
-```bash
-docker system prune -a --volumes -f
-```
-
-### Kubernetes
-
-Para remover todos os recursos (Pods, Deployments, Services, ConfigMaps):
-
-```bash
-kubectl delete all --all --all-namespaces
-```
-
-Remover namespaces adicionais:
-
-```bash
-kubectl get namespaces
-kubectl delete namespace <nome-do-namespace>
-```
-
-### Helm
-
-Para deletar todas as releases e repositórios:
-
-1. **Remover todas as releases**:
-   ```bash
-   helm ls --all --short | xargs -n 1 helm delete
-   ```
-
-2. **Remover todos os repositórios**:
-   ```bash
-   helm repo list --short | xargs -n 1 helm repo remove
-   ```
-
-3. **Limpar o cache e configurações locais do Helm**:
-   ```bash
-   rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
-   ```
-
-### GitHub
-
-Para subir as alterações de um arquivo para o Git, siga os passos abaixo:
-
-1. **Verificar o status do repositório** (opcional):
-   ```bash
-   git status
-   ```
-
-2. **Adicionar as alterações ao staging**:
-   - Para adicionar um arquivo específico:
-     ```bash
-     git add nome_do_arquivo
-     ```
-   - Para adicionar todas as alterações:
-     ```bash
-     git add .
-     ```
-
-3. **Fazer um commit das alterações**:
-   ```bash
-   git commit -m "Descrição das alterações realizadas"
-   ```
-
-4. **Enviar as alterações para o repositório remoto**:
-   ```bash
-   git push origin nome_da_branch
-   ```
-
-   > Substitua `nome_da_branch` pela branch onde você está trabalhando (geralmente `main` ou `master`, ou uma branch específica).
-
-### Resumo dos comandos:
-```bash
-git add .
-git commit -m "Descrição das alterações"
-git push origin nome_da_branch
-```
-
-Esses passos garantem que suas alterações sejam salvas localmente e enviadas para o repositório remoto.
-
--
+Esse `README.md` fornece um guia completo para configuração, inicialização, testes e operações de manutenção para a aplicação **OrchestrateOps**, incluindo instruções específicas para Docker, Kubernetes, Helm e GitHub. A seção de operações básicas está organizada para facilitar o gerenciamento e a resolução de problemas de forma eficiente.
