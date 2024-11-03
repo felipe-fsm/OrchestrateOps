@@ -1,4 +1,4 @@
-Aqui está o `README.md` atualizado, incluindo as seções para a limpeza completa de Kubernetes e Helm.
+
 
 ---
 
@@ -16,66 +16,72 @@ Aqui está o `README.md` atualizado, incluindo as seções para a limpeza comple
 
 ## Configuração do Ambiente
 
-1. **Certifique-se de que todos os requisitos estão instalados**:
-   Verifique se você possui `Docker`, `Minikube`, `Kubectl`, `Helm` e `curl` instalados e configurados. Execute os comandos abaixo para confirmar as versões instaladas:
+### 1. Verificar Requisitos
 
-   ```bash
-   docker --version         # Docker
-   minikube version         # Minikube
-   kubectl version --client # Kubectl
-   helm version             # Helm
-   curl --version           # Curl
-   ```
+Certifique-se de que os seguintes componentes estão instalados e configurados: **Docker**, **Minikube**, **Kubectl**, **Helm** e **curl**. Confirme as versões instaladas com os comandos abaixo:
 
-2. **Inicie o Docker**:
-   - Inicie o Docker Desktop (para Windows ou Mac) ou inicie o serviço Docker no Linux:
-     ```bash
-     sudo systemctl start docker
-     ```
+```bash
+docker --version         # Docker
+minikube version         # Minikube
+kubectl version --client # Kubectl
+helm version             # Helm
+curl --version           # Curl
+```
 
-3. **Inicie o Minikube**:
-   - Emule um cluster Kubernetes local:
-     ```bash
-     minikube start
-     ```
+### 2. Iniciar Docker e Minikube
 
-4. **Configure o Docker para Usar o Minikube**:
-   - Direcione a construção de imagens para o Minikube:
-     ```bash
-     eval $(minikube docker-env)
-     ```
+- **Inicie o Docker**:
+  ```bash
+  sudo systemctl start docker
+  ```
+
+- **Inicie o Minikube** para criar um cluster Kubernetes local:
+  ```bash
+  minikube start
+  ```
+
+- **Configure o Docker para usar o Minikube**:
+  ```bash
+  eval $(minikube docker-env)
+  ```
 
 ## Iniciando a Aplicação
 
-1. **Construa a Imagem Docker da Aplicação**:
-   - A partir da pasta `OrchestrateOps`, construa a imagem:
+1. **Construir a Imagem Docker da Aplicação**:
+   - Na pasta `OrchestrateOps`, execute:
      ```bash
      docker build -t orchestrateops .
      ```
 
-2. **Inicie o Helm**:
-   - Navegue até `OrchestrateOps/helm` e instale o chart com o nome de release desejado (exemplo: `orchestrateops-release`):
+2. **Subir a Imagem para o Docker Hub** (opcional, se precisar compartilhar):
+   ```bash
+   docker login
+   docker tag orchestrateops <seu_usuario>/orchestrateops:latest
+   docker push <seu_usuario>/orchestrateops:latest
+   ```
+
+3. **Instalar o Chart com o Helm**:
+   - Navegue para a pasta `OrchestrateOps/helm` e execute:
      ```bash
      helm install orchestrateops-release ./orchestrateops-chart
      ```
 
-3. **Verifique se os Pods estão em Execução**:
-   - Confirme se os pods estão ativos:
+4. **Configurar Port Forwarding para Acesso Local**:
+   - Verifique os pods em execução:
      ```bash
      kubectl get pods
      ```
 
-4. **Configurar o Port Forwarding para Acesso Local**:
-   - Localize o nome do pod com `kubectl get pods` e execute:
+   - Configure o port forwarding:
      ```bash
      kubectl port-forward pod/<nome-do-pod> 8080:80
      ```
 
 ## Testando a Aplicação
 
-### Testes de CRUD
+### 1. Testes CRUD
 
-1. **Criação de uma Solicitação (POST)**:
+- **Criação de uma Solicitação (POST)**:
    - Crie novas solicitações com os seguintes comandos para diferentes setores e solicitantes:
 
    ```bash
@@ -160,28 +166,26 @@ Aqui está o `README.md` atualizado, incluindo as seções para a limpeza comple
    }'
    ```
 
-2. **Listagem de Solicitações (GET)**:
-   ```bash
-   curl -X GET "http://localhost:8080/solicitacoes/"
-   ```
+- **Listagem de Solicitações (GET)**:
+  ```bash
+  curl -X GET "http://localhost:8080/solicitacoes/"
+  ```
 
-3. **Atualização de uma Solicitação (PUT)**:
-   - Altere o status de uma solicitação:
-   ```bash
-   curl -X PUT "http://localhost:8080/solicitacoes/1" -H "Content-Type: application/json" -d '{
-     "status": "em processamento"
-   }'
-   ```
+- **Atualização de uma Solicitação (PUT)**:
+  ```bash
+  curl -X PUT "http://localhost:8080/solicitacoes/1" -H "Content-Type: application/json" -d '{
+    "status": "em processamento"
+  }'
+  ```
 
-4. **Exclusão de uma Solicitação (DELETE)**:
-   - Exclua uma solicitação específica:
-   ```bash
-   curl -X DELETE "http://localhost:8080/solicitacoes/1"
-   ```
+- **Exclusão de uma Solicitação (DELETE)**:
+  ```bash
+  curl -X DELETE "http://localhost:8080/solicitacoes/1"
+  ```
 
-### Teste de Persistência
+### 2. Teste de Persistência
 
-1. **Reinicie o Pod para Testar a Persistência**:
+1. **Reinicie o Pod** para verificar persistência:
    ```bash
    kubectl delete pod <nome-do-pod>
    ```
@@ -198,20 +202,17 @@ Aqui está o `README.md` atualizado, incluindo as seções para a limpeza comple
 
 ## Possíveis Problemas e Soluções
 
-- **Erro: `Cannot connect to the Docker daemon`**
-  - **Solução**: Verifique se o Docker está em execução com `sudo systemctl status docker`. Se não estiver, inicie-o com `sudo systemctl start docker`.
+- **Erro: `Cannot connect to the Docker daemon`**  
+  **Solução**: Verifique se o Docker está em execução com `sudo systemctl status docker`. Se necessário, inicie-o com `sudo systemctl start docker`.
 
-- **Erro: `Connection refused` ao tentar acessar a aplicação**
-  - **Solução**: Verifique se o pod está em execução (`kubectl get pods`). Se o pod não estiver ativo, veja detalhes com `kubectl describe pod <nome-do-pod>` e certifique-se de que o port forwarding está configurado.
+- **Erro: `Connection refused` ao acessar a aplicação**  
+  **Solução**: Verifique os pods em execução (`kubectl get pods`). Certifique-se de que o port forwarding está configurado.
 
-- **Erro: `ImagePullBackOff` ou `ErrImagePull` no Kubernetes**
-  - **Solução**: Confirme que `eval $(minikube docker-env)` foi executado antes de construir a imagem para disponibilizá-la no Minikube. Reinstale o chart Helm, se necessário.
+- **Erro: `ImagePullBackOff` ou `ErrImagePull` no Kubernetes**  
+  **Solução**: Execute `eval $(minikube docker-env)` antes de construir a imagem. Reinstale o chart Helm se necessário.
 
-- **Banco de dados não persiste após reiniciar o Pod**
-  - **Solução**: Verifique o volume em `app/data` e o mapeamento de volumes no Docker e Kubernetes. Certifique-se de que o `DATABASE_URL` está apontando para um caminho persistente.
-
-- **Erro `Helm not found` ou falha ao instalar o chart**
-  - **Solução**: Verifique a instalação do Helm (`helm version`). Se não estiver instalado, siga o guia oficial para instalá-lo.
+- **Banco de dados não persiste após reiniciar o Pod**  
+  **Solução**: Verifique o volume em `app/data` e o mapeamento de volumes no Docker e Kubernetes. Certifique-se de que o `DATABASE_URL` aponta para um caminho persistente.
 
 ---
 
@@ -219,72 +220,75 @@ Aqui está o `README.md` atualizado, incluindo as seções para a limpeza comple
 
 ### Docker
 
-1. **Iniciar o Docker**:
-   ```bash
-   sudo systemctl start docker
-   ```
+- **Listar Containers**:
+  ```bash
+  docker ps -a
+  ```
 
-2. **Iniciar e Construir Containers com `docker-compose`
+- **Iniciar Docker**:
+  ```bash
+  sudo systemctl start docker
+  ```
 
-**:
-   ```bash
-   docker-compose up --build -d
-   ```
+- **Iniciar Containers com `docker-compose`**:
+  ```bash
+  docker-compose up --build -d
+  ```
 
-3. **Parar Todos os Containers**:
-   ```bash
-   docker stop $(docker ps -q)
-   ```
+- **Parar Todos os Containers**:
+  ```bash
+  docker stop $(docker ps -q)
+  ```
 
-4. **Remover Todos os Containers Parados**:
-   ```bash
-   docker rm -vf $(docker ps -aq)
-   ```
+- **Remover Containers Parados**:
+  ```bash
+  docker rm -vf $(docker ps -aq)
+  ```
 
-5. **Limpeza Completa do Docker**:
-   ```bash
-   docker system prune -a --volumes -f
-   ```
+- **Limpeza Completa do Docker**:
+  ```bash
+  docker system prune -a --volumes -f
+  ```
 
-### Kubernetes (`kubectl`)
+### Kubernetes
 
-1. **Iniciar o Minikube**:
-   ```bash
-   minikube start
-   ```
+- **Iniciar o Minikube**:
+  ```bash
+  minikube start
+  ```
 
-2. **Listar Todos os Pods no Namespace Atual**:
-   ```bash
-   kubectl get pods
-   ```
+- **Listar Pods no Namespace Atual**:
+  ```bash
+  kubectl get pods
+  ```
 
-3. **Reiniciar um Pod**:
-   ```bash
-   kubectl delete pod <nome-do-pod>
-   ```
+- **Reiniciar um Pod**:
+  ```bash
+  kubectl delete pod <nome-do-pod>
+  ```
 
-4. **Descrever um Pod (Detalhes do Pod)**:
-   ```bash
-   kubectl describe pod <nome-do-pod>
-   ```
+- **Descrever um Pod**:
+  ```bash
+  kubectl describe pod <nome-do-pod>
+  ```
 
 ### Helm
 
-1. **Instalar um Chart**:
-   ```bash
-   helm install <nome-da-release> <caminho-do-chart>
-   ```
+- **Instalar um Chart**:
+  ```bash
+  helm install <nome-da-release> <caminho-do-chart>
+  ```
 
-2. **Atualizar uma Release Existente**:
-   ```bash
-   helm upgrade <nome-da-release> <caminho-do-chart>
-   ```
+- **Atualizar uma Release**:
+  ```bash
+  helm upgrade <nome-da-release> <caminho-do-chart>
+  ```
 
-3. **Limpar Configurações Locais do Helm**:
-   ```bash
-   helm repo remove <nome-do-repo>
-   rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
-   ```
+- **Limpar Configurações Locais do Helm**:
+  ```bash
+  helm repo remove <nome-do-repo>
+  rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
+  ```
 
 ---
 
@@ -292,7 +296,7 @@ Aqui está o `README.md` atualizado, incluindo as seções para a limpeza comple
 
 ### Docker
 
-Para remover todos os containers, imagens, volumes e redes:
+Para remover containers, imagens, volumes e redes:
 
 ```bash
 docker system prune -a --volumes -f
@@ -300,13 +304,13 @@ docker system prune -a --volumes -f
 
 ### Kubernetes
 
-Para remover todos os recursos Kubernetes, incluindo Pods, Deployments, Services e ConfigMaps:
+Para remover todos os recursos (Pods, Deployments, Services, ConfigMaps):
 
 ```bash
 kubectl delete all --all --all-namespaces
 ```
 
-Se desejar uma limpeza completa dos recursos e namespaces personalizados, você pode listar e excluir todos os namespaces adicionais:
+Remover namespaces adicionais:
 
 ```bash
 kubectl get namespaces
@@ -315,7 +319,7 @@ kubectl delete namespace <nome-do-namespace>
 
 ### Helm
 
-Para deletar todas as releases e repositórios do Helm, siga estas etapas:
+Para deletar todas as releases e repositórios:
 
 1. **Remover todas as releases**:
    ```bash
@@ -332,142 +336,44 @@ Para deletar todas as releases e repositórios do Helm, siga estas etapas:
    rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
    ```
 
-Esses comandos garantirão uma limpeza completa, removendo todos os recursos e configurações locais, deixando o ambiente preparado para novas implementações.
+### GitHub
 
----
+Para subir as alterações de um arquivo para o Git, siga os passos abaixo:
 
-Este guia cobre a configuração, operação, testes de CRUD, persistência e uma limpeza completa para a aplicação **OrchestrateOps** com Docker, Kubernetes e Helm, além de fornecer instruções detalhadas para operações básicas e solução de problemas.
-
-Abaixo está uma sequência resumida para limpar o ambiente e realizar todas as etapas de instalação, execução e testes para o **OrchestrateOps**.
-
----
-
-## Sugestão de Testes - Sequência Resumida de Operações para OrchestrateOps
-
-### 1. Limpeza Completa do Ambiente
-
-#### Docker
-```bash
-docker system prune -a --volumes -f
-```
-
-#### Kubernetes
-```bash
-kubectl delete all --all --all-namespaces
-kubectl delete namespace <custom-namespace>  # Remova namespaces adicionais, se houver
-```
-
-#### Helm
-```bash
-helm ls --all --short | xargs -n 1 helm delete
-helm repo list --short | xargs -n 1 helm repo remove
-rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
-```
-
-### 2. Configuração do Ambiente
-
-1. **Inicie o Docker**:
+1. **Verificar o status do repositório** (opcional):
    ```bash
-   sudo systemctl start docker
+   git status
    ```
 
-2. **Inicie o Minikube**:
-   ```bash
-   minikube start
-   ```
-
-3. **Configurar o Docker para Usar o Minikube**:
-   ```bash
-   eval $(minikube docker-env)
-   ```
-
-### 3. Construção e Publicação da Imagem Docker
-
-1. **Construa a Imagem Docker da Aplicação**:
-   - Na pasta `OrchestrateOps`, execute:
+2. **Adicionar as alterações ao staging**:
+   - Para adicionar um arquivo específico:
      ```bash
-     docker build -t orchestrateops .
+     git add nome_do_arquivo
+     ```
+   - Para adicionar todas as alterações:
+     ```bash
+     git add .
      ```
 
-2. **Suba a Imagem para o Docker Hub**:
+3. **Fazer um commit das alterações**:
    ```bash
-   docker login
-   docker tag orchestrateops <seu_usuario>/orchestrateops:latest
-   docker push <seu_usuario>/orchestrateops:latest
+   git commit -m "Descrição das alterações realizadas"
    ```
 
-3. **Baixe a Imagem do Docker Hub (opcional em outro ambiente)**:
+4. **Enviar as alterações para o repositório remoto**:
    ```bash
-   docker pull <seu_usuario>/orchestrateops:latest
+   git push origin nome_da_branch
    ```
 
-### 4. Instalação do Helm
+   > Substitua `nome_da_branch` pela branch onde você está trabalhando (geralmente `main` ou `master`, ou uma branch específica).
 
-1. **Instale o Chart com o Helm**:
-   - Navegue até a pasta `OrchestrateOps/helm` e execute:
-     ```bash
-     helm install orchestrateops-release ./orchestrateops-chart
-     ```
+### Resumo dos comandos:
+```bash
+git add .
+git commit -m "Descrição das alterações"
+git push origin nome_da_branch
+```
 
-### 5. Configurar Port Forwarding para Acesso Local
+Esses passos garantem que suas alterações sejam salvas localmente e enviadas para o repositório remoto.
 
-1. **Verifique se os Pods estão em Execução**:
-   ```bash
-   kubectl get pods
-   ```
-
-2. **Configurar o Port Forwarding**:
-   ```bash
-   kubectl port-forward pod/<nome-do-pod> 8080:80
-   ```
-
-### 6. Testes de CRUD
-
-1. **Criação de uma Solicitação (POST)**:
-   ```bash
-   curl -X POST "http://localhost:8080/solicitacoes/" -H "Content-Type: application/json" -d '{
-     "setor": "Financeiro",
-     "solicitante": "Maria Silva",
-     "produto": "Notebook",
-     "quantidade": 1,
-     "status": "pendente"
-   }'
-   ```
-
-2. **Listagem de Solicitações (GET)**:
-   ```bash
-   curl -X GET "http://localhost:8080/solicitacoes/"
-   ```
-
-3. **Atualização de uma Solicitação (PUT)**:
-   ```bash
-   curl -X PUT "http://localhost:8080/solicitacoes/1" -H "Content-Type: application/json" -d '{
-     "status": "em processamento"
-   }'
-   ```
-
-4. **Exclusão de uma Solicitação (DELETE)**:
-   ```bash
-   curl -X DELETE "http://localhost:8080/solicitacoes/1"
-   ```
-
-### 7. Teste de Persistência
-
-1. **Reinicie o Pod para Testar a Persistência**:
-   ```bash
-   kubectl delete pod <nome-do-pod>
-   ```
-
-2. **Reconfigure o Port Forwarding**:
-   ```bash
-   kubectl port-forward pod/<novo-nome-do-pod> 8080:80
-   ```
-
-3. **Verifique a Persistência (GET)**:
-   ```bash
-   curl -X GET "http://localhost:8080/solicitacoes/"
-   ```
-
----
-
-Essa sequência cobre desde a limpeza do ambiente até os testes de CRUD e persistência da aplicação **OrchestrateOps** com Docker, Minikube, Kubernetes e Helm.
+-
