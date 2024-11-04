@@ -208,6 +208,9 @@ curl --version           # Curl
   kubectl delete namespace <nome-do-namespace>
   ```
 
+
+
+
 #### Solução de Problemas
 
 - **Erro: `Connection refused` ao tentar acessar a aplicação**  

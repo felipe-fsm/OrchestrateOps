@@ -49,8 +49,6 @@ OrchestrateOps é uma aplicação de controle de solicitações de compra, permi
 
 ## Etapas da Aula
 
----
-
 ### 1. Configuração do Ambiente
 
 #### 1.1. Requisitos e Dependências
@@ -91,6 +89,8 @@ OrchestrateOps é uma aplicação de controle de solicitações de compra, permi
 2. **Configure o Kubernetes Dashboard**:
    - Siga a [documentação do Kubernetes Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) para configurá-lo e verificar o acesso ao ambiente do cluster.
 
+---
+
 **ATENÇÃO** -> PRECISA DETALHAR MELHOR ESSE TRECHO DO TRABALHO.
 
 ---
@@ -99,7 +99,6 @@ OrchestrateOps é uma aplicação de controle de solicitações de compra, permi
 
 Este passo pode ser importante para garantir que o ambiente esteja limpo de configurações e dados antigos, evitando problemas de conflito.
 
----
 
 #### 1.2.1. Limpeza do Docker
 
@@ -128,7 +127,6 @@ Este passo pode ser importante para garantir que o ambiente esteja limpo de conf
       - Encontre o serviço **Docker Desktop**.
       - Clique com o botão direito e selecione **Reiniciar**.
 
----
 
 #### 1.2.2. Limpeza do Kubernetes
 
@@ -222,8 +220,6 @@ Este passo pode ser importante para garantir que o ambiente esteja limpo de conf
 
 2. **Acesse o Dashboard**: O comando abrirá o dashboard no navegador.
 
----
-
 #### 1.3.4. Baixar o Programa do GitHub
 
 1. **Baixar o programa OrchestrateOps**:
@@ -235,9 +231,7 @@ Este passo pode ser importante para garantir que o ambiente esteja limpo de conf
      git clone https://github.com/felipe-fsm/OrchestrateOps.git
      ```
 
----
-
-#### 1.3.6. Instalar a Aplicação OrchestrateOps via Helm
+#### 1.3.5. Instalar a Aplicação OrchestrateOps via Helm
 
 1. **Navegue até o Diretório do Chart**:
    - Acesse o diretório `OrchestrateOps/helm`, onde o chart do Helm da aplicação está localizado:
@@ -274,30 +268,28 @@ Este passo pode ser importante para garantir que o ambiente esteja limpo de conf
 
 4. **Alternativa para Acessar o Serviço no Minikube com QEMU**:
 
-1. **Obtenha o NodePort do Serviço**:
-   - Verifique o NodePort (a porta externa) que o Kubernetes atribuiu ao serviço:
-     ```bash
-     kubectl get services
-     ```
-   - Procure a linha correspondente ao serviço `orchestrateops-release` e anote a porta externa na coluna `PORT(S)` (geralmente no formato `PORT:NodePort`).
+    1. **Obtenha o NodePort do Serviço**:
+    - Verifique o NodePort (a porta externa) que o Kubernetes atribuiu ao serviço:
+        ```bash
+        kubectl get services
+        ```
+    - Procure a linha correspondente ao serviço `orchestrateops-release` e anote a porta externa na coluna `PORT(S)` (geralmente no formato `PORT:NodePort`).
 
-2. **Recupere o IP do Minikube**:
-   - Pegue o IP do Minikube para acessar o serviço externamente:
-     ```bash
-     minikube ip
-     ```
+    2. **Recupere o IP do Minikube**:
+    - Pegue o IP do Minikube para acessar o serviço externamente:
+        ```bash
+        minikube ip
+        ```
 
-3. **Acesse o Serviço**:
-   - No seu navegador ou terminal, acesse o serviço usando o IP do Minikube e o NodePort obtido. O formato será:
-     ```
-     http://<minikube_ip>:<node_port>
-     ```
-   - Exemplo:
-     ```bash
-     http://192.168.99.100:30000
-     ```
-
-Isso deve permitir o acesso ao serviço mesmo com a restrição da rede integrada ao QEMU.
+    3. **Acesse o Serviço**:
+    - No seu navegador ou terminal, acesse o serviço usando o IP do Minikube e o NodePort obtido. O formato será:
+        ```
+        http://<minikube_ip>:<node_port>
+        ```
+    - Exemplo:
+        ```bash
+        http://192.168.99.100:30000
+        ```
 
 5. **Configurar Port Forwarding para Acesso Local**:
    - Verifique os pods em execução:
@@ -361,178 +353,3 @@ Esses passos simplificam o uso para os alunos e mantêm a aplicação centraliza
 **ATENÇÃO - Em desenvolvimento - Término da Seção**
 
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-Com esta estrutura, os passos estão organizados de forma clara e sequencial.
-
-
-#### 1.3.4. Instalar o Helm Chart
-
-1. **Verifique a instalação do Helm**:
-   ```bash
-   helm version
-   ```
-
-2. **Instale o chart da aplicação**:
-   ```bash
-   helm install <nome_do_release> <caminho_do_chart>
-   ```
-
----
-
-Por favor, siga esses passos e me avise assim que tiver validado até aqui para darmos continuidade.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 2. Iniciação do Ambiente
-
-Nesta etapa, vamos configurar e iniciar todos os serviços necessários para a execução da aplicação.
-
-1. **Inicie o Docker e o Minikube**:
-    ```bash
-    minikube start
-    ```
-
-2. **Implante o Helm Chart** para configurar a aplicação no Kubernetes:
-    ```bash
-    helm install <nome_do_release> <caminho_do_chart>
-    ```
-
-3. **Confirme se todos os serviços estão ativos**:
-    ```bash
-    kubectl get pods
-    kubectl get services
-    ```
-
-4. **Acesse o Kubernetes Dashboard** para monitorar os serviços:
-   - Use o comando `minikube dashboard` para abrir o dashboard no navegador.
-
----
-
-Essa estrutura ajuda a manter o ambiente organizado e evita problemas relacionados a resíduos de dados e configurações, garantindo que a aula *hands-on* ocorra em um ambiente estável e previsível.
-
-
-
-
-
-
-
-3. **Confirme o acesso ao cluster Kubernetes**:
-   - Execute `kubectl cluster-info` para garantir que o cluster Kubernetes esteja acessível e funcionando.
-
-
-- **Configuração do Ambiente de Desenvolvimento**: Instruções para configurar o ambiente com Docker, Kubernetes (usando Minikube), e Helm.
-- **Instalação de Dependências**: Passo a passo para instalar ferramentas necessárias, como `kubectl`, `helm`, `docker-compose`, e quaisquer pacotes adicionais.
-- **Inicialização do Cluster Local**: Configuração de um cluster Kubernetes local com Minikube, verificando a conexão com `kubectl`.
-
----
-
-
-
-### 2. Implementação da Aplicação
-
-- **Exploração do Código da Aplicação**: Revisão das partes essenciais da aplicação **OrchestrateOps**, destacando os arquivos principais e a estrutura de diretórios.
-- **Construção da Imagem Docker**: Explicação sobre o Dockerfile e execução do build para gerar a imagem da aplicação.
-- **Configuração de Persistência com SQLite**: Explicação sobre o banco de dados local e verificação da persistência de dados em um ambiente containerizado.
-
----
-
-### 3. Configuração da Aplicação para o Ambiente de Laboratório
-
-- **Ajuste de Variáveis e Caminhos**: Revisão de configurações para adaptar a aplicação ao ambiente do laboratório, incluindo ajuste de caminhos, arquivos de configuração, e definição de variáveis.
-- **Configuração de Portas e Exposição de Serviços**: Configuração do redirecionamento de portas para acesso externo, essencial para acesso ao cluster Kubernetes no laboratório.
-- **Automatização com Scripts**: Uso de scripts de inicialização para simplificar o setup em máquinas do laboratório.
-
----
-
-### 4. Testes CRUD
-
-- **Testes via Terminal**: Comandos `curl` para testar as operações CRUD diretamente pelo terminal.
-- **Testes com Postman e Swagger**: Uso do Postman ou documentação Swagger para verificar endpoints e realizar operações CRUD.
-- **Análise de Respostas e Logs**: Verificação das respostas da API e análise dos logs de contêineres para debugging e monitoramento.
-
----
-
-### 5. Teste de Persistência (Resiliência)
-
-- **Simulação de Falhas**: Forçar a reinicialização de contêineres e verificar a persistência dos dados no SQLite.
-- **Testes de Failover e Reinicialização**: Análise da capacidade da aplicação de restaurar o estado após falhas, focando na integridade dos dados armazenados.
-
----
-
-### 6. Teste de Escalabilidade e Orquestração com Kubernetes
-
-- **Configuração de Réplicas**: Utilizar Kubernetes para configurar réplicas da aplicação, aumentando o número de contêineres para escalabilidade horizontal.
-- **Balanceamento de Carga**: Explicação e implementação de balanceamento entre réplicas para distribuir as solicitações.
-- **Monitoramento de Pods e Logs**: Verificar o comportamento dos pods durante a escalabilidade e monitorar a orquestração automática.
-- **Simulação de Autoscaling**: Configuração de autoscaling baseado em carga para demonstrar a automação do Kubernetes na criação de novos contêineres quando necessário.
-
----
-
-Essas etapas proporcionam uma visão completa de todo o ciclo de desenvolvimento e implantação com Kubernetes e Docker, enquanto demonstram os conceitos de resiliência e escalabilidade na prática.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Outros tópicos importantes
-
-1. **Construir a Imagem Docker da Aplicação**:
-   - Na pasta `OrchestrateOps`, execute:
-     ```bash
-     docker build -t orchestrateops .
-     ```
-
-2. **Subir a Imagem para o Docker Hub** (opcional, se precisar compartilhar):
-   ```bash
-   docker login
-   docker tag orchestrateops <seu_usuario>/orchestrateops:latest
-   docker push <seu_usuario>/orchestrateops:latest

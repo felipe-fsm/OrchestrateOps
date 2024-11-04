@@ -1,3 +1,7 @@
+# COMENTE UMA DAS VERSÕES PARA NÃO HAVER CONFLITOS
+
+# Versão para Local
+
 replicaCount: 1
 
 image:
@@ -27,4 +31,40 @@ resources:
 persistence:
   enabled: true
   accessMode: ReadWriteOnce
-  size: 1Gi
+  size: 5Mi
+
+##########
+
+# # Versão para Laboratório de Informática
+
+# replicaCount: 1
+
+# image:
+#   repository: felipesantosmachado/orchestrateops
+#   tag: "latest"
+#   pullPolicy: Always
+
+# # Configuração para o serviço ClusterIP
+# service:
+#   type: ClusterIP
+#   port: 80
+
+# # Configuração para o serviço NodePort
+# nodeportService:
+#   type: NodePort
+#   port: 80
+#   nodePort: ""  # Deixe vazio para alocação automática, ou defina uma porta específica, como 30080
+
+# resources:
+#   limits:
+#     cpu: 100m
+#     memory: 128Mi
+#   requests:
+#     cpu: 100m
+#     memory: 64Mi
+
+# persistence:
+#   enabled: true
+#   accessMode: ReadWriteMany  # Modificado para ReadWriteMany para acesso compartilhado
+#   size: 5Mi  # Tamanho do volume aumentado para suportar múltiplos usuários
+#   storageClass: ""  # Usado para configurar um storage class específico, se necessário

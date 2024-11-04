@@ -10,7 +10,9 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ include "orchestrateops.name" . }}
+        # app: {{ include "orchestrateops.name" . }}
+        app: orchestrateops
+        env: production # Exemplo de outra tag (opcional)
     spec:
       containers:
         - name: {{ .Chart.Name }}
