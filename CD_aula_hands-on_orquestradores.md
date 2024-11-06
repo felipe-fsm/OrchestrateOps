@@ -20,9 +20,7 @@ Com Kubernetes, podemos gerenciar múltiplos contêineres em diferentes ambiente
 Essa plataforma foi originalmente criada pelo Google e é mantida pela Cloud Native Computing Foundation (CNCF).
 A documentação oficial do Kubernetes pode ser encontrada em [kubernetes.io/docs](https://kubernetes.io/docs).
 
----
-
-## Comparação entre Kubernetes, Docker Swarm, OpenShift e Mesos
+### Comparação entre Kubernetes, Docker Swarm, OpenShift e Mesos
 
 | Característica                | Kubernetes             | Docker Swarm         | OpenShift                   | Mesos                    |
 |-------------------------------|------------------------|----------------------|-----------------------------|--------------------------|
@@ -37,10 +35,6 @@ A documentação oficial do Kubernetes pode ser encontrada em [kubernetes.io/doc
 
 ---
 
-Durante esta aula, exploraremos o Kubernetes em detalhes, entenderemos seu funcionamento e faremos exercícios práticos para aplicá-lo.
-
----
-
 ## O que é OrchestrateOps
 
 OrchestrateOps é uma aplicação de controle de solicitações de compra, permitindo gerenciar ordens, via uma API REST simples com persistência de dados em SQLite. A aplicação opera em contêineres Docker e demonstra funcionalidades de orquestração de containers usando Kubernetes e Helm, facilitando operações de criação, leitura, atualização e exclusão (CRUD) e oferecendo testes de escalabilidade e resiliência."
@@ -48,6 +42,8 @@ OrchestrateOps é uma aplicação de controle de solicitações de compra, permi
 ---
 
 ## Etapas da Aula
+
+Durante esta aula, exploraremos o Kubernetes em detalhes, entenderemos seu funcionamento e faremos exercícios práticos para aplicá-lo.
 
 ### 1. Configuração do Ambiente
 
@@ -74,7 +70,7 @@ OrchestrateOps é uma aplicação de controle de solicitações de compra, permi
 - **Postman**: ferramenta que facilita a criação, teste e documentação de APIs, permitindo enviar requisições HTTP e visualizar respostas.
   [Documentação Postman](https://learning.postman.com/docs/getting-started/introduction/)
 
-#### 1.1.1. Verificação dos Requisitos e Dependências
+##### Verificação dos Requisitos e Dependências
 
 1. **Verifique se todos os requisitos estão instalados**:
     ```bash
@@ -99,95 +95,159 @@ OrchestrateOps é uma aplicação de controle de solicitações de compra, permi
 
 Este passo pode ser importante para garantir que o ambiente esteja limpo de configurações e dados antigos, evitando problemas de conflito.
 
+---
 
-#### 1.2.1. Limpeza do Docker
+#### Limpeza do Persistent Volume Claim (PVC)
 
-- **Remover contêineres parados**:
-    ```bash
-    docker container prune
-    ```
+1. **Verifique os PVCs Existentes**
+Primeiro, liste os PVCs no namespace onde está rodando a sua aplicação. Se você estiver usando o namespace padrão, pode deixar o parâmetro `-n`.
 
-- **Remover imagens não utilizadas**:
-    ```bash
-    docker image prune -a
-    ```
+```bash
+kubectl get pvc -n <seu-namespace>
+```
 
-- **Remover volumes não utilizados**:
-    ```bash
-    docker volume prune
-    ```
+> **Nota**: Substitua `<seu-namespace>` pelo namespace correto (ex.: `default`).
 
-- **Reiniciar o Docker (se necessário)**:
-    - **Para Linux**:
-      ```bash
-      sudo systemctl restart docker    # Para sistemas Linux com systemd
-      ```
-    - **Para Windows**:
-      - Abra o **Gerenciador de Tarefas**.
-      - Encontre o serviço **Docker Desktop**.
-      - Clique com o botão direito e selecione **Reiniciar**.
+Isso mostrará uma lista dos PVCs, onde você pode identificar qual PVC é o responsável pelo armazenamento da sua aplicação.
 
+2. **Exclua o PVC**
+Com o nome do PVC em mãos, exclua-o usando o comando abaixo:
 
-#### 1.2.2. Limpeza do Kubernetes
+```bash
+kubectl delete pvc <nome-do-pvc> -n <seu-namespace>
+```
 
-- **Remover todos os recursos do cluster**:
-    ```bash
-    kubectl delete all --all
-    ```
+> **Nota**: Substitua `<nome-do-pvc>` pelo nome do PVC que você deseja remover.
 
-- **Reinicializar o Minikube (se necessário)**:
-    ```bash
-    minikube delete
-    minikube start
-    ```
+3. **Verifique se o PVC e o PV Foram Removidos**
+Confirme que o PVC foi removido e que o Persistent Volume (PV) associado também foi desalocado. Liste novamente para garantir que eles não estão mais presentes:
 
-#### 1.2.3. Limpeza do Helm
+```bash
+kubectl get pvc -n <seu-namespace>
+kubectl get pv
+```
 
-- **Desinstalar *charts* e liberar recursos**:
+O PV associado ao PVC deve ter sido removido automaticamente (ou estar marcado como `Released` ou `Available` se não for removido automaticamente).
+
+4. **(Opcional) Forçar Exclusão do PV**
+Se o PV associado não for removido automaticamente e estiver marcado como `Released`, você pode excluí-lo manualmente:
+
+```bash
+kubectl delete pv <nome-do-pv>
+```
+
+Isso deve garantir que o armazenamento persistente seja completamente removido.
+
+---
+
+#### Limpeza do Helm
+
+1. **Desinstalar *charts* e liberar recursos**:
     ```bash
     helm uninstall <nome_do_release>
-    ```
 
-- **Remover *releases* antigas**:
-    ```bash
-    helm repo remove <nome_do_repositorio>
-    ```
+2. **Remover Releases do Helm**:
+   ```bash
+   helm list --all-namespaces -q | xargs -L1 helm uninstall
+   ```
 
-- **Remover Todas as Releases e Repositórios do Helm**:
+3. **Remover Repositórios do Helm**:
+   ```bash
+   helm repo remove $(helm repo list -o json | jq -r '.[].name')
+   ```
+
+4. **Remover Todas as Releases e Repositórios do Helm**:
   ```bash
   helm ls --all --short | xargs -n 1 helm delete
   helm repo list --short | xargs -n 1 helm repo remove
   rm -rf ~/.cache/helm ~/.config/helm ~/.local/share/helm/plugins
   ```
 
-#### 1.2.4. Limpeza da Persistência de Dados
+---
 
-- **Remover volumes persistentes no Kubernetes (Persistent Volume Claims - PVCs)**:
+#### Limpeza do Kubernetes e Minikube
+
+1. **Inicie o Minikube Temporariamente** (se necessário para acesso às configurações):
+   ```bash
+   minikube start # minikube start --driver=docker (opcional)
+   ```
+
+2. **Remova Contextos e Namespaces no Kubernetes** (enquanto o Minikube estiver ativo):
+   - **Apagar Contexto do Minikube**:
+     ```bash
+     kubectl config delete-context minikube
+     kubectl config unset current-context
+     ```
+   - **Remover Namespaces Personalizados**:
+     ```bash
+     kubectl delete namespaces $(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep -vE 'kube|default')
+     ```
+
+3. **Remover todos os recursos do cluster**:
     ```bash
-    kubectl delete pvc --all
+    kubectl delete all --all
     ```
 
-- **Remover volumes físicos no Kubernetes (Persistent Volumes - PVs)**:
-    ```bash
-    kubectl delete pv --all
-    ```
-
-- **Remover arquivos de banco de dados antigos (se aplicável)**:
-    - Verifique e exclua arquivos residuais no diretório de persistência (ex.: `orchestrateops.db`) se precisar recomeçar com dados limpos.
+4. **Parar e Apagar o Cluster do Minikube**:
+   ```bash
+   minikube stop
+   minikube delete --all
+   ```
 
 ---
 
-### 1.3. Passo a Passo para Iniciar o Ambiente (Local)
+#### Limpeza do Docker
+
+1. **Parar e Remover Contêineres**:
+   ```bash
+   docker stop $(docker ps -aq)
+   docker rm $(docker ps -aq)
+   ```
+  - **Remover contêineres parados**:
+      ```bash
+      docker container prune
+      ```
+
+2. **Remover Imagens**:
+   ```bash
+   docker rmi $(docker images -q) -f
+   ```
+
+  - **Remover imagens não utilizadas**:
+      ```bash
+      docker image prune -a
+      ```
+
+3. **Remover Volumes**:
+   ```bash
+   docker volume rm $(docker volume ls -q)
+   ```
+
+  - **Remover volumes não utilizados**:
+      ```bash
+      docker volume prune
+      ```
+
+4. **Remover Redes Criadas pelo Usuário**:
+   ```bash
+   docker network prune -f
+   ```
+
+---
+
+### 1.3. Iniciando o Ambiente
 
 #### 1.3.1. Iniciar o Docker
 
 1. **Verifique se o Docker está instalado e em execução**:
-   - Para Linux:
-     ```bash
-     sudo systemctl start docker
-     ```
-   - Para Windows:
-     - Abra o **Docker Desktop** e verifique se ele está em execução.
+  - Para Linux:
+    ```bash
+    sudo systemctl start docker # Para sistemas Linux com systemd
+    ```
+  - Para Windows:
+    - Abra o **Gerenciador de Tarefas**.
+    - Encontre o serviço **Docker Desktop**.
+    - Clique com o botão direito e selecione **Reiniciar**.
 
 #### 1.3.2. Iniciar o Minikube
 
