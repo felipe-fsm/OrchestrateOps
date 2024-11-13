@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "orchestrateops.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "orchestrateops.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "orchestrateops.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "orchestrateops.name" . }}
+        env: production  # Exemplo de tag adicional (opcional)
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: sqlite-storage
+              mountPath: /app/data  # Monta o diretório persistente para o banco de dados
+      volumes:
+        - name: sqlite-storage
+          persistentVolumeClaim:
+            claimName: {{ include "orchestrateops.fullname" . }}-sqlite-pvc

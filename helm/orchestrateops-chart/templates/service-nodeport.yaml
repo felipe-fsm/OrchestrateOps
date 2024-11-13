@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "orchestrateops.fullname" . }}-nodeport
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "orchestrateops.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.nodeportService.type }}
+  ports:
+    - name: http
+      port: {{ .Values.nodeportService.port }}
+      targetPort: {{ .Values.nodeportService.targetPort }}
+      protocol: {{ .Values.nodeportService.protocol | default "TCP" }}
+      nodePort: {{ .Values.nodeportService.nodePort }}
+  selector:
+    app: {{ include "orchestrateops.name" . }}

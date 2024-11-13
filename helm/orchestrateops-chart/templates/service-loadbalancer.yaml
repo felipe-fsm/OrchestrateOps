@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "orchestrateops.fullname" . }}-loadbalancer
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ include "orchestrateops.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.loadbalancerService.type }}
+  ports:
+    - name: http
+      port: {{ .Values.loadbalancerService.port }}
+      targetPort: {{ .Values.loadbalancerService.targetPort }}
+      protocol: {{ .Values.loadbalancerService.protocol | default "TCP" }}
+  selector:
+    app: {{ include "orchestrateops.name" . }}

@@ -1,0 +1,88 @@
+# Configurações gerais
+replicaCount: 1  # Número inicial de réplicas
+
+# Configurações da imagem Docker
+image:
+  repository: felipesantosmachado/orchestrateops
+  tag: "latest"
+  pullPolicy: Always
+
+# Configurações de serviços
+service:
+  type: ClusterIP          # Tipo de serviço (ClusterIP é o padrão)
+  port: 8080               # Porta do serviço
+  targetPort: 8080         # Porta no contêiner
+  protocol: TCP            # Protocolo (TCP ou UDP)
+
+nodeportService:
+  type: NodePort           # Tipo explícito para NodePort
+  port: 8080               # Porta interna do serviço NodePort
+  targetPort: 8080         # Porta no contêiner
+  protocol: TCP            # Protocolo (TCP ou UDP)
+  nodePort: 30010          # Porta externa mapeada (30000-32767)
+  externalTrafficPolicy: Cluster  # Pode ser "Local" ou "Cluster"
+
+loadbalancerService:
+  type: LoadBalancer       # Tipo explícito para LoadBalancer
+  port: 8080               # Porta exposta pelo LoadBalancer
+  targetPort: 8080         # Porta no contêiner
+  protocol: TCP            # Protocolo (TCP ou UDP)
+  externalTrafficPolicy: Cluster  # Pode ser "Local" ou "Cluster"
+
+# Configurações de recursos para pods
+resources:
+  limits:
+    cpu: "100m"            # Limite máximo de CPU
+    memory: "128Mi"        # Limite máximo de memória
+  requests:
+    cpu: "50m"             # Requisição mínima de CPU
+    memory: "64Mi"         # Requisição mínima de memória
+
+# Configurações de persistência
+persistence:
+  enabled: true
+  size: "10Mi"                  # Tamanho do armazenamento
+  accessMode: "ReadWriteOnce"   # Modo de acesso
+  storageClass: "manual-storage" # Nome da StorageClass
+  hostPath: "/data/orchestrateops" # Caminho no nó
+
+# Configurações de limites globais para contêineres
+limits:
+  default:
+    cpu: "100m"                # Limite padrão de CPU por contêiner
+    memory: "128Mi"            # Limite padrão de memória por contêiner
+  defaultRequest:
+    cpu: "50m"                 # Requisição padrão de CPU por contêiner
+    memory: "64Mi"             # Requisição padrão de memória por contêiner
+
+# Configurações de HPA (HorizontalPodAutoscaler)
+hpa:
+  minReplicas: 1               # Número mínimo de réplicas
+  maxReplicas: 5               # Número máximo de réplicas
+  metrics:
+    cpu:
+      averageUtilization: 1   # Utilização média de CPU (%)
+    memory:
+      averageUtilization: 1   # Utilização média de memória (%)
+
+# Configurações de cotas de recursos (ResourceQuota)
+resourceQuota:
+  requests:
+    cpu: "200m"                # Requisição mínima de CPU
+    memory: "256Mi"            # Requisição mínima de memória
+  limits:
+    cpu: "400m"                # Limite máximo de CPU
+    memory: "512Mi"            # Limite máximo de memória
+
+# Configurações para teste de PersistentVolume (PV)
+testPV:
+  capacity: "100Mi"            # Tamanho máximo do PV
+  accessMode: "ReadWriteOnce"  # Modo de acesso permitido
+  reclaimPolicy: "Retain"      # Política de retenção ao liberar o PV
+  storageClassName: "manual-storage" # Nome da StorageClass
+  hostPath: "/mnt/data"        # Caminho onde o PV será montado no nó
+
+# Configurações para teste de PersistentVolumeClaim (PVC)
+testPVC:
+  capacity: "10Mi"             # Quantidade de armazenamento solicitada
+  accessMode: "ReadWriteOnce"  # Modo de acesso permitido (ReadWriteOnce, ReadWriteMany)

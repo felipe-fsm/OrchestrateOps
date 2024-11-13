@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "orchestrateops.fullname" . }}-sqlite-pvc
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/resource-policy": keep  # Evita a exclusão do PVC ao desinstalar o Helm
+  labels:
+    app: {{ include "orchestrateops.name" . }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    environment: {{ .Values.environment | default "production" }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      # Comente/Descomente alternadamente as duas linhas seguintes (storage: ) para teste de capacidade de armazenamento.
+      storage: {{ .Values.persistence.size | default "10Mi" }}
+      # storage: "10Mi"
+  storageClassName: {{ .Values.persistence.storageClass | default "manual-storage" }}

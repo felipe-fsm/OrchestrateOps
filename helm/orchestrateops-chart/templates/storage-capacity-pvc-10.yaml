@@ -1,0 +1,15 @@
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: {{ include "orchestrateops.fullname" . }}-test-pvc
+#   namespace: {{ .Release.Namespace }}
+#   labels:
+#     app: {{ include "orchestrateops.name" . }}
+#     environment: test
+# spec:
+#   accessModes:
+#     - {{ .Values.testPVC.accessMode | default "ReadWriteOnce" }}
+#   resources:
+#     requests:
+#       storage: {{ .Values.testPVC.capacity | default "10Mi" }}
+#   storageClassName: {{ .Values.testPV.storageClassName | default "manual-storage" }}

@@ -1,0 +1,16 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: {{ include "orchestrateops.fullname" . }}-test-pv
+#   labels:
+#     app: {{ include "orchestrateops.name" . }}
+#     environment: test
+# spec:
+#   capacity:
+#     storage: {{ .Values.testPV.capacity | default "100Mi" }}
+#   accessModes:
+#     - {{ .Values.testPV.accessMode | default "ReadWriteOnce" }}
+#   persistentVolumeReclaimPolicy: {{ .Values.testPV.reclaimPolicy | default "Retain" }}
+#   storageClassName: {{ .Values.testPV.storageClassName | default "manual-storage" }}
+#   hostPath:
+#     path: {{ .Values.testPV.hostPath | default "/mnt/data" }}
